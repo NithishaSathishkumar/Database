@@ -1,0 +1,135 @@
+\qecho
+\qecho Nithisha Sathishkumar
+
+\qecho 
+\qecho #1
+SELECT g.name, COUNT(c.CODate) AS co_count
+FROM Genre g
+    JOIN BookCatToGenre bg ON g.id = bg.genreid
+    JOIN BookCat bc ON bg.BookCatID = bc.id
+    LEFT JOIN Book b ON bc.id = b.BookCatID
+    LEFT JOIN CORecord c ON b.id = c.bookid
+GROUP BY g.name
+ORDER BY co_count DESC;
+
+\qecho 
+\qecho #2
+SELECT FirstName AS firstname, LastName AS lastname, Email AS email
+FROM Customer
+WHERE ID NOT IN (
+    SELECT DISTINCT Customer.ID
+    FROM Customer
+    LEFT JOIN LibCard ON Customer.ID = LibCard.CustomerID
+    LEFT JOIN CORecord ON LibCard.ID = CORecord.LibCardID
+    WHERE CORecord.ID IS NOT NULL
+)
+AND Email NOT LIKE '%@gmail.com'
+ORDER BY ID;
+
+\qecho 
+\qecho #3
+SELECT s.name AS state_name, COUNT(cr.ID) AS num_co_books
+FROM State s
+LEFT JOIN Customer c ON s.ID = c.StateID
+LEFT JOIN LibCard lc ON c.ID = lc.CustomerID
+LEFT JOIN CoRecord cr ON lc.ID = cr.LibCardID
+WHERE cr.CIDate IS NULL
+GROUP BY s.name, s.ID
+HAVING COUNT(cr.ID) > 0 
+ORDER BY s.ID;
+
+\qecho 
+\qecho #4
+SELECT b.BarCode
+FROM Book b
+	JOIN CoRecord cr ON b.ID = cr.BookID
+	LEFT JOIN LibLocation ll ON b.LibLocationID = ll.ID
+WHERE cr.CIDate IS NULL AND ll.ID IS NOT NULL
+ORDER BY b.BarCode;
+
+\qecho 
+\qecho #5
+SELECT DISTINCT ON (Customer.id, corecord.bookid) 
+    Customer.firstname, 
+    Customer.lastname, 
+    bookcat.title, 
+    phone.number AS phone_number, 
+    phonetype.name AS phonetype
+FROM customer 
+    JOIN libcard lc ON Customer.id = lc.customerid
+    JOIN corecord ON lc.id = corecord.libcardid
+    JOIN book b ON corecord.bookid = b.id
+    JOIN bookcat ON b.bookcatid = bookcat.id
+    JOIN phone phone ON Customer.id = phone.customerid
+    JOIN phonetype phonetype ON phone.phonetypeid = phonetype.id
+WHERE corecord.ciduedate < '2022-02-05' AND corecord.cidate IS NULL
+ORDER BY Customer.id, corecord.bookid, phone.id;
+
+\qecho 
+\qecho #6
+SELECT 
+    g.name, 
+    COUNT(co.bookid) AS numbooks, 
+    ROUND(SUM(co.cidate - co.codate), 2) AS totaltime, 
+    ROUND(AVG(co.cidate - co.codate), 2) AS avgtime
+FROM genre g
+    JOIN bookcattogenre bcg ON g.id = bcg.genreid
+    JOIN book b ON bcg.bookcatid = b.bookcatid
+    JOIN corecord co ON b.id = co.bookid
+WHERE co.cidate IS NOT NULL
+GROUP BY g.id, g.name
+ORDER BY g.id;
+
+\qecho 
+\qecho #7
+SELECT bc.title, a.FirstName, a.LastName
+FROM BookCat bc
+JOIN BookToAuthor bta ON bc.ID = bta.BookCatID
+JOIN Author a ON bta.Authorid = a.ID
+WHERE bc.ID IN (
+    SELECT BookCatID
+    FROM BookToAuthor
+    GROUP BY BookCatID
+    HAVING COUNT(DISTINCT Authorid) > 1
+)
+ORDER BY bc.ID, a.ID;
+
+BEGIN;
+
+\qecho 
+\qecho #8
+UPDATE Book
+SET liblocationid = 2
+WHERE 9 IN (    
+    SELECT G.id
+    FROM Book B
+        JOIN BookCat BC ON (B.bookcatid = BC.id)
+        JOIN BookCatToGenre BCtG ON (BC.id = BCtG.bookcatid)
+        JOIN Genre G ON (BCtG.genreid = G.id)
+) AND liblocationid = 3;
+
+\qecho
+\qecho #9
+
+INSERT INTO BookCat (title, description, ISBN, DDNum)
+VALUES ('The SQL Mysteries', 'Gripping Technothriller', 'A123456789', '456.21');
+
+
+INSERT INTO BookToAuthor (BookCatID, AuthorID)
+VALUES ((SELECT ID FROM BookCat WHERE ISBN = 'A123456789'), (SELECT ID FROM Author WHERE FirstName = 'Lyn' AND LastName = 'Gala'));
+
+INSERT INTO BookCatToGenre (BookCatID, genreid)
+VALUES ((SELECT ID FROM BookCat WHERE ISBN = 'A123456789'), 10), 
+       ((SELECT ID FROM BookCat WHERE ISBN = 'A123456789'), 1);
+
+\qecho #9 CHECK COMMAND:
+SELECT Bookcat.title, Author.firstName, Genre.name
+FROM Bookcat
+JOIN Bookcattogenre ON ( Bookcat.id = Bookcattogenre.bookcatid)
+JOIN Genre on ( Bookcattogenre.genreid = Genre.id)
+JOIN Booktoauthor ON ( BooktoAuthor.bookcatid = Bookcat.id)
+JOIN Author ON ( BookToAuthor.authorid = Author.id)
+WHERE isbn = 'A123456789';
+
+
+RollBack;

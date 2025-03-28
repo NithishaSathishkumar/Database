@@ -1,0 +1,68 @@
+ALTER SEQUENCE Employee_id_seq RESTART WITH 101;
+ALTER SEQUENCE phone_id_seq RESTART WITH 101;
+BEGIN;
+
+\qecho
+\qecho Nithisha Sathishkumar
+\qecho
+
+INSERT INTO Employee(EmployeeNum, name, DepartmentID, salary, Email)
+VALUES('Z000000001', 'Zeke', 3, 0, 'zman@bigco.com');
+
+\qecho check #1
+SELECT COUNT (*) FROM Employee;
+SELECT * FROM Employee
+WHERE Employee.employeenum LIKE 'Z%';
+
+INSERT INTO PHONE(Employeeid, number, PhoneTypeId)
+VALUES((SELECT Employee.ID FROM Employee WHERE Employeenum = 'Z000000001'), '321-4590', 'W');
+
+\qecho Check #2
+SELECT phonetypeid, phone.number
+FROM Phone
+JOIN Employee ON ( phone.employeeid = employee.id)
+WHERE employee.employeenum = 'Z000000001';
+
+UPDATE Employee
+SET departmentID = 5
+WHERE EmployeeNum = 'Z000000001';
+
+\qecho check #3
+SELECT employee.name
+FROM Employee
+JOIN Department ON ( department.id = employee.departmentid)
+WHERE department.name LIKE 'Sales';
+
+INSERT INTO Attendees(EmployeeID, MeetingID) 
+VALUES
+((SELECT Employee.ID::integer FROM Employee WHERE EmployeeNum = 'Z000000001'), 115), 
+((SELECT Employee.ID::integer FROM Employee WHERE EmployeeNum = 'D000000002'), 115);
+
+\qecho Check#4
+SELECT employee.name
+FROM Employee
+JOIN Attendees ON ( Employee.id = attendees.employeeid)
+WHERE attendees.meetingid = 115;
+
+
+DELETE FROM Attendees
+WHERE EmployeeID = (SELECT Employee.ID FROM Employee WHERE EMPLOYEENUM = 'Z000000001');
+
+DELETE FROM Phone 
+WHERE EmployeeID = (SELECT Employee.id FROM EMPLOYEE WHERE EMPLOYEENUM = 'Z000000001');
+
+DELETE FROM Employee 
+WHERE EmployeeNum = 'Z000000001';
+
+
+\qecho Check #5
+SELECT count (*) from employee;
+ROLLBACK;
+
+\qecho Check rollback
+SELECT employee.name
+FROM Employee
+JOIN Attendees ON ( Employee.id = attendees.employeeid)
+WHERE attendees.meetingid = 115;
+
+ROLLBACK;

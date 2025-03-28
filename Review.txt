@@ -1,0 +1,50 @@
+Nithisha Sathishkumar
+
+475  - Gym tracking
+	I really liked the Api Cycle and the Low-Level Api Example
+	The API was bit a confusing after the item execute, it printed the list out so going back to see if the api was present. 
+	
+HexGirls - Gymnastics tracking system:
+	⁃	I really liked the way they formatted the Api where just enter “?” Will give them the list of Api they have was nearly amazing. 
+	⁃	I wish they spend more time on showing the api and just 2 demo example did not show the idea of their business problem
+
+JoinFirces - Healthcare information and booking
+	⁃	I really liked the way they have the high level interface of the program and having example was really nice.
+	⁃	I really liked the way they have 2 different api interface for staff and customer
+	⁃	There was nothing that was wrong but thing is that I wish the presenter was louder 
+	⁃	This was my second favorite presentation
+
+MadHouse- Gym Management:
+	⁃	I really like the way they kept the api simple by just type the number. It simple by entering a number and I really liked the way the demo 		went see many demo was really nice to see how the system works. 
+	⁃	The one thing was that the presenter was looking at the phone for notes which is something that they would work on the future. 
+
+Postgres Wizard - Hotel Reservations system 
+	⁃	It is my team 
+	⁃	I really like the way my team presented the demo but wish we have time more time. I wish we explained the schema a bit more.
+	⁃	But this was my first favorite presentation
+
+Query Commanders -  Gym tracking system
+	⁃	The list of specific api under each function was nice to understand what each method is expected to do.
+	⁃	I wish they were in-person and the api was not working, doing a manually was not helping them with the business problem
+
+ShadowWizard  - Social media account management
+	⁃	I really like the way the slides pretty and easy to read and the presenter was clear and loud. 
+	⁃	I wish they have list method so that we can see the whole list which will be useful see if that updated. 
+
+SpongeBob - Video streaming management
+	⁃	The api did not work which I wish they worked on a working api and did not demo. 
+	⁃	I really liked the way their slide had the example of API and the way it works visually.
+ 
+SQL Syndicate - Drivers license / criminal tracking:
+	⁃	I wish they put a bit more afford for the slide to look good
+        -       The topic was interesting I like the way they have the api list
+
+Tripple Query -  Meal plan delivery
+	⁃	I wish they have there presentation prepared 
+	⁃	they did not have list of api which was listing it 
+
+
+OVERALL:
+I really liked the way this project went. I want this project to exist in future class but it would be great if there was a lecture on explaining the connection to database and vs code or any other IDE.
+
+I really enjoyed this class and learned a lot from this class. Thank you for the amazing class. 

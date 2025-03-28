@@ -1,0 +1,152 @@
+Nithisha Sathishkumar
+
+ current_database 
+------------------
+ postgres
+(1 row)
+
+
+CREATE DATABASE
+
+
+ current_database 
+------------------
+ hw09
+(1 row)
+
+
+CREATE TABLE
+
+CREATE TABLE
+
+CREATE TABLE
+
+CREATE TABLE
+
+CREATE TABLE
+
+CREATE TABLE
+
+CREATE TABLE
+
+CREATE TABLE
+
+#1
+               List of relations
+ Schema |      Name       |   Type   |  Owner   
+--------+-----------------+----------+----------
+ public | attendees       | table    | postgres
+ public | building        | table    | postgres
+ public | building_id_seq | sequence | postgres
+ public | employee        | table    | postgres
+ public | employee_id_seq | sequence | postgres
+ public | meeting         | table    | postgres
+ public | meeting_id_seq  | sequence | postgres
+ public | phone_number    | table    | postgres
+ public | phone_type      | table    | postgres
+ public | room            | table    | postgres
+ public | room_id_seq     | sequence | postgres
+ public | state           | table    | postgres
+(12 rows)
+
+
+#2
+                                        Table "public.employee"
+     Column      |          Type          | Collation | Nullable |               Default                
+-----------------+------------------------+-----------+----------+--------------------------------------
+ id              | integer                |           | not null | nextval('employee_id_seq'::regclass)
+ employee_number | character varying(10)  |           | not null | 
+ first_name      | character varying(30)  |           | not null | 
+ middle_name     | character varying(30)  |           |          | 
+ last_name       | character varying(30)  |           | not null | 
+ email           | character varying(100) |           | not null | 
+ supervisorid    | integer                |           |          | 
+Indexes:
+    "employee_pkey" PRIMARY KEY, btree (id)
+    "employee_email_key" UNIQUE CONSTRAINT, btree (email)
+    "employee_employee_number_key" UNIQUE CONSTRAINT, btree (employee_number)
+Foreign-key constraints:
+    "employee_supervisorid_fkey" FOREIGN KEY (supervisorid) REFERENCES employee(id) DEFERRABLE INITIALLY DEFERRED
+Referenced by:
+    TABLE "attendees" CONSTRAINT "attendees_employeeid_fkey" FOREIGN KEY (employeeid) REFERENCES employee(id) DEFERRABLE INITIALLY DEFERRED
+    TABLE "employee" CONSTRAINT "employee_supervisorid_fkey" FOREIGN KEY (supervisorid) REFERENCES employee(id) DEFERRABLE INITIALLY DEFERRED
+    TABLE "meeting" CONSTRAINT "meeting_creator_fkey" FOREIGN KEY (creator) REFERENCES employee(id) DEFERRABLE INITIALLY DEFERRED
+    TABLE "phone_number" CONSTRAINT "phone_number_employeeid_fkey" FOREIGN KEY (employeeid) REFERENCES employee(id) DEFERRABLE INITIALLY DEFERRED
+
+
+#3
+                                        Table "public.meeting"
+   Column   |            Type             | Collation | Nullable |               Default               
+------------+-----------------------------+-----------+----------+-------------------------------------
+ id         | integer                     |           | not null | nextval('meeting_id_seq'::regclass)
+ roomid     | integer                     |           | not null | 
+ start_time | timestamp without time zone |           | not null | 
+ duration   | interval                    |           | not null | 
+ purpose    | character varying(30)       |           | not null | 
+ agenda     | character varying(120)      |           |          | 
+ creator    | integer                     |           | not null | 
+Indexes:
+    "meeting_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "meeting_creator_fkey" FOREIGN KEY (creator) REFERENCES employee(id) DEFERRABLE INITIALLY DEFERRED
+    "meeting_roomid_fkey" FOREIGN KEY (roomid) REFERENCES room(id) DEFERRABLE INITIALLY DEFERRED
+Referenced by:
+    TABLE "attendees" CONSTRAINT "attendees_meetingid_fkey" FOREIGN KEY (meetingid) REFERENCES meeting(id) DEFERRABLE INITIALLY DEFERRED
+
+
+#4
+                                      Table "public.room"
+   Column    |         Type          | Collation | Nullable |             Default              
+-------------+-----------------------+-----------+----------+----------------------------------
+ id          | integer               |           | not null | nextval('room_id_seq'::regclass)
+ room_number | character varying(10) |           | not null | 
+ buildingid  | integer               |           | not null | 
+ capacity    | integer               |           | not null | 
+Indexes:
+    "room_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "room_buildingid_fkey" FOREIGN KEY (buildingid) REFERENCES building(id) DEFERRABLE INITIALLY DEFERRED
+Referenced by:
+    TABLE "meeting" CONSTRAINT "meeting_roomid_fkey" FOREIGN KEY (roomid) REFERENCES room(id) DEFERRABLE INITIALLY DEFERRED
+
+
+#5
+                                       Table "public.building"
+    Column     |         Type          | Collation | Nullable |               Default                
+---------------+-----------------------+-----------+----------+--------------------------------------
+ id            | integer               |           | not null | nextval('building_id_seq'::regclass)
+ building_name | character varying(20) |           | not null | 
+ address1      | character varying(30) |           | not null | 
+ address2      | character varying(30) |           |          | 
+ city          | character varying(30) |           | not null | 
+ zip           | character varying(5)  |           | not null | 
+ stateid       | character varying(30) |           | not null | 
+Indexes:
+    "building_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "building_stateid_fkey" FOREIGN KEY (stateid) REFERENCES state(id) DEFERRABLE INITIALLY DEFERRED
+Referenced by:
+    TABLE "room" CONSTRAINT "room_buildingid_fkey" FOREIGN KEY (buildingid) REFERENCES building(id) DEFERRABLE INITIALLY DEFERRED
+
+
+#6
+               Table "public.attendees"
+   Column   |  Type   | Collation | Nullable | Default 
+------------+---------+-----------+----------+---------
+ meetingid  | integer |           | not null | 
+ employeeid | integer |           | not null | 
+Indexes:
+    "attendees_pkey" PRIMARY KEY, btree (meetingid, employeeid)
+Foreign-key constraints:
+    "attendees_employeeid_fkey" FOREIGN KEY (employeeid) REFERENCES employee(id) DEFERRABLE INITIALLY DEFERRED
+    "attendees_meetingid_fkey" FOREIGN KEY (meetingid) REFERENCES meeting(id) DEFERRABLE INITIALLY DEFERRED
+
+
+#7
+ current_database 
+------------------
+ postgres
+(1 row)
+
+
+DROP DATABASE

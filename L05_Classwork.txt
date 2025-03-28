@@ -1,0 +1,90 @@
+Sub query 
+SELECT Building, Roomnumber, COUNT(DISTINCT(meeting.ID)) AS num_of_meeting FROM Room
+JOIN Meeting ON Room.ID = Meeting.RoomID
+GROUP BY building, roomnumber
+ORDER BY building, roomnumber;
+
+SELECT Building, Roomnumber, num_of_meeting
+FROM (
+	SELECT Building, Roomnumber, COUNT(DISTINCT(meeting.ID)) AS num_of_meeting 
+	FROM Room
+		JOIN Meeting ON Room.ID = Meeting.RoomID
+	GROUP BY building, roomnumber
+)
+ORDER BY Building, RoomNumber;
+
+
+SELECT Department.name, AVG(table1.ti) AS avg_meetings_attended
+FROM Department
+JOIN (
+
+	SELECT Employee.DepartmentID, COUNT(Attendees.EmployeeID) AS ti 
+	FROM Meeting
+		JOIN Attendees ON Attendees.MeetingId = Meeting.ID
+		JOIN Employee ON Attendees.EmployeeID = Employee.ID 
+	GROUP BY Employee.DepartmentID,EmployeeID
+
+) AS table1 ON table1.DepartmentID = Department.ID
+GROUP BY Department.name
+ORDER BY Department.name;
+
+SUBSELECT : WHERE, SELECT, HAVING, FROM, JOIN
+
+WHERE
+Find all employees who are making more than average.
+SELECT employeeNum, employee.name, Salary 
+FROM Employee
+WHERE salary > (
+	SELECT Avg(salary) 
+	FROM Employee
+) ORDER BY salary desc;
+
+JOIN
+SELECT Department.name, Employee.name, ROUND(salary - dept_avg.avg_salary) AS salary_difference
+FROM Employee
+JOIN DepARTMENT ON DepARTMENT.ID = Employee.DepartmentID
+JOIN (
+    SELECT Department.ID, AVG(salary) AS avg_salary
+    FROM Employee
+    JOIN Department ON Employee.departmentID = Department.ID
+    GROUP BY Department.ID
+) AS dept_avg ON dept_avg.ID = Employee.departmentID
+ORDER BY Department.name;
+
+
+SELECT Meeting.purpose, x.c FROM Meeting
+JOIN Attendees ON Meeting.ID = MeetingID
+JOIN ( 
+	
+) AS x ON x.meetingID = Meeting.ID
+GROUP BY purpose, x.c
+ORDER BY meeting.Purpose;
+
+SELECT Table1.purpose, COUNT(*) AS numofmeeting FROM Meeting
+	GROUP BY meeting.purpose
+	Order By meeting.purpose;
+
+SELECT Table1.Purpose, table1.numofAttendees / table2.numofmeeting AS avg
+FROM (SELECT Meeting.purpose, COUNT(*) AS numofAttendees 
+	FROM Attendees
+	JOIN Meeting ON Meeting.ID = Attendees.MeetingID
+	GROUP BY meeting.purpose
+) AS Table1
+JOIN (SELECT Meeting.purpose, COUNT(*) AS numofmeeting 
+	FROM Meeting
+	GROUP BY meeting.purpose
+) AS Table2 ON ( Table1.purpose = Table2.purpose)
+ORDER BY Purpose;
+
+
+SELECT  p.ID, p.purpose, COUNT(PhoneTypeID) FROM Phone
+JOIN Employee ON Employee.ID = Phone.EmployeeID
+JOIN Attendees On Employee.ID = Attendees.EmployeeID
+JOIN(
+	SELECT Meeting.ID, purpose FROM Meeting
+	JOIN Room ON Room.ID = Meeting.RoomID
+	WHERE Room.Building LIKE '%B%'
+) AS p ON p.ID = Attendees.MeetingID 
+WHERE Phone.PhoneTypeID = 'C'
+GROUP BY p.ID, P.purpose
+ORDER BY p.ID, p.purpose;
