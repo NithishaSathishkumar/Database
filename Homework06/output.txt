@@ -1,0 +1,176 @@
+
+Nithisha Sathishkumar
+
+ALTER SEQUENCE
+ALTER SEQUENCE
+ALTER SEQUENCE
+ALTER SEQUENCE
+BEGIN
+
+#1
+INSERT 0 1
+UPDATE 1
+
+Check #1
+ numCheckedOut 
+---------------
+             4
+(1 row)
+
+ book count 
+------------
+          1
+(1 row)
+
+
+#2
+UPDATE 1
+UPDATE 1
+
+Check #2
+ numincart 
+-----------
+         6
+(1 row)
+
+ numcheckedout 
+---------------
+             1
+(1 row)
+
+
+#3
+ id 
+----
+ 12
+(1 row)
+
+INSERT 0 1
+INSERT 0 4
+
+Check #3
+ bookcatid | genreid 
+-----------+---------
+       521 |      12
+       704 |      12
+       800 |      12
+       836 |      12
+(4 rows)
+
+
+#4
+DELETE 3
+DELETE 1
+DELETE 1
+DELETE 1
+
+Check #4
+ numcat 
+--------
+      0
+(1 row)
+
+ numbook 
+---------
+       0
+(1 row)
+
+
+#5
+ id  
+-----
+ 102
+(1 row)
+
+INSERT 0 1
+INSERT 0 1
+
+Check #5
+ id  | firstname | lastname |        email        |     address1      | address2 |   city    | stateid | postalcode 
+-----+-----------+----------+---------------------+-------------------+----------+-----------+---------+------------
+ 102 | George    | Spelvin  | Pseudonum@gmail.com | 1234 Plain Street |          | Rochester | NY      | 
+(1 row)
+
+ id  | customerid |  barcode   |      issuedate      | isactive 
+-----+------------+------------+---------------------+----------
+ 113 |        102 | B123456789 | 2323-01-15 00:00:00 | t
+(1 row)
+
+
+#6
+ id | firstname | lastname |         email         |    address1     | address2 |  city   | stateid | postalcode 
+----+-----------+----------+-----------------------+-----------------+----------+---------+---------+------------
+ 50 | Georgina  | Spelvin  | psudonum183@ghost.com | 1515 ghost lane | Apt 0    | spokane | WA      | 
+(1 row)
+
+UPDATE 1
+INSERT 0 1
+
+Check #6
+ numlibcards 
+-------------
+         114
+(1 row)
+
+ numactivecards 
+----------------
+            100
+(1 row)
+
+ id  | customerid |  barcode   |      issuedate      | isactive 
+-----+------------+------------+---------------------+----------
+ 114 |         50 | X123456789 | 2023-01-05 00:00:00 | t
+(1 row)
+
+
+#7
+  id  
+------
+ 1350
+(1 row)
+
+INSERT 0 1
+INSERT 0 2
+
+Check #7
+ num Thriller 
+--------------
+          154
+(1 row)
+
+ num Romance 
+-------------
+         172
+(1 row)
+
+
+#8
+INSERT 0 3
+
+Check #8
+ numnewbooks 
+-------------
+           3
+(1 row)
+
+
+#9
+UPDATE 6
+
+Check #9
+ numinrepair 
+-------------
+          25
+(1 row)
+
+
+#10
+DELETE 3
+
+Check #10
+ numinrepair 
+-------------
+          22
+(1 row)
+
+ROLLBACK

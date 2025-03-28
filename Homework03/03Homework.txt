@@ -1,0 +1,96 @@
+\qecho Nithisha Sathishkumar
+\qecho
+\qecho #1 
+SELECT Building, roomNumber, Meeting.startTime AS startdatetime, Meeting.duration + Meeting.startTime AS enddatetime 
+FROM Room
+	JOIN Meeting ON Meeting.RoomID = Room.ID
+WHERE Building = 'A'
+ORDER by startTime, roomNumber;
+\qecho
+\qecho #2 
+SELECT Building, roomNumber, Meeting.startTime::DATE AS startdate, Meeting.startTime::TIME AS 
+	starttime, (Meeting.duration + Meeting.startTime)::TIME AS endtime 
+FROM Meeting
+	JOIN Room ON Room.ID = Meeting.RoomID
+ORDER BY startTime, roomNumber;
+\qecho
+\qecho #3 
+SELECT Building, roomNumber, COALESCE(capacity::text, 'unknown') AS numseats 
+FROM Room
+ORDER BY Building, roomNumber, numseats;
+\qecho
+\qecho #4 
+SELECT Building AS "Building", COUNT(Room.id) AS "RoomWithCapacity" 
+FROM Room
+WHERE capacity IS NOT NULL 
+GROUP BY Building
+ORDER BY Building;
+\qecho
+\qecho #5 
+SELECT SUM(capacity) AS "Total Seat Count" 
+FROM Room
+WHERE capacity IS NOT NULL;
+\qecho
+\qecho #6 
+SELECT SUM(COALESCE(capacity::int, 100)) AS "Total Seat Count" 
+FROM Room;
+\qecho
+\qecho #7 
+SELECT purpose, startTime::DATE AS startdate, startTime::TIME AS starttime 
+FROM Meeting
+WHERE startTime::TIME > '10:30 AM' AND startTime::TIME < '2:00 PM'
+ORDER BY Meeting.ID;
+\qecho
+\qecho #8 
+SELECT purpose, startTime::TIME AS time, duration 
+FROM Meeting
+WHERE startTime::TIME + duration > '4:00 PM'
+ORDER BY Meeting.ID;
+\qecho
+\qecho #9 
+SELECT purpose, startTime, duration 
+FROM Meeting
+WHERE startTime::TIME <= '2018-03-28 14:30:00' AND startTime::TIME + duration >= '2018-03-28 14:30:00' 
+ORDER BY Meeting.ID;
+\qecho
+\qecho #10 
+SELECT purpose 
+FROM Meeting
+WHERE moderatorID IS NULL
+GROUP BY purpose
+ORDER BY purpose;
+\qecho
+\qecho #11 
+SELECT DISTINCT(EmployeeNum), name 
+FROM Employee
+	JOIN Attendees ON Attendees.EmployeeID = Employee.ID
+	JOIN Meeting ON Attendees.MeetingID = Meeting.ID
+WHERE startTime <= '2018-03-18 10:00:00' AND startTime + duration > '2018-03-18 10:00:00'; 
+\qecho
+\qecho #12 
+SELECT EmployeeNum, COUNT(Attendees.MeetingID) AS "numDouble" 
+FROM Employee
+	JOIN Attendees ON Attendees.EmployeeID = Employee.ID
+	JOIN Meeting ON Attendees.MeetingID = Meeting.ID
+WHERE startTime <= '2018-03-18 10:00:00' AND startTime + duration >= '2018-03-18 10:00:00' 
+GROUP BY Employee.EmployeeNum
+HAVING COUNT(Attendees.MeetingID) >= 2
+ORDER BY Employee.EmployeeNum;
+\qecho
+\qecho #13
+SELECT Employee.EmployeeNum, Employee.name, SUM(Meeting.duration) AS totalduration 
+FROM Employee
+	JOIN Attendees ON Attendees.EmployeeID = Employee.ID
+	JOIN Meeting ON Attendees.MeetingID = Meeting.ID
+WHERE Meeting.moderatorID IS NOT NULL
+GROUP BY Employee.EmployeeNum, Employee.name
+ORDER BY totalduration DESC
+LIMIT 1;
+\qecho
+\qecho #14
+SELECT purpose, AVG(Salary) AS "Average Salary" 
+FROM Employee
+	JOIN Attendees ON Attendees.EmployeeID = Employee.ID
+	JOIN Meeting ON Meeting.ID = Attendees.MeetingID
+GROUP BY purpose
+ORDER BY purpose;

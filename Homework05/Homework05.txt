@@ -1,0 +1,138 @@
+\qecho Nithisha Sathishkumar
+\qecho
+\qecho #1 
+SELECT
+    Department.ID AS dept_id,
+    (
+        SELECT COUNT(DISTINCT Meeting.ID)
+        FROM Meeting
+        	JOIN Attendees ON Meeting.ID = Attendees.MeetingID
+        	JOIN Employee ON Employee.ID = Attendees.EmployeeID
+        WHERE Employee.departmentid = Department.ID
+    ) AS num_meetings
+FROM
+    Department
+ORDER BY
+    Department.ID;
+\qecho
+\qecho #2 
+SELECT E.name, SUM(table1.attendees) AS attendees, SUM(table1.capacity) AS capacity,
+    SUM(table1.availseats) AS availseats
+FROM (
+    SELECT M.creatorid, M.id, R.capacity, COUNT(A.employeeId) AS attendees,
+    	R.capacity - COUNT(A.employeeId) AS availseats
+    FROM Meeting AS M
+    		JOIN Room AS R ON (M.roomid = R.id)
+    		JOIN Attendees AS A ON (M.id = A.meetingid)
+    GROUP BY M.id, R.capacity
+) AS table1
+	JOIN Employee AS E ON (E.id = table1.creatorid)
+GROUP BY E.id
+ORDER BY SUM(availseats), E.name;
+\qecho
+
+\qecho #3
+SELECT Employee.name, sub."numMeetings", sub."numMeetings" * 0.75 AS "75percent"
+FROM Employee
+	JOIN (
+    		SELECT Attendees.employeeId, COUNT(DISTINCT Attendees.meetingId) AS "numMeetings"
+    		FROM Attendees
+    		GROUP BY Attendees.employeeId
+    		ORDER BY "numMeetings" DESC
+    		LIMIT 1
+	) sub ON Employee.ID = sub.employeeId;
+\qecho
+
+\qecho #4
+SELECT Employee.name, COUNT(DISTINCT Attendees.meetingId) AS nummeetings 
+FROM Employee 
+	JOIN Attendees ON Employee.ID = Attendees.employeeId
+GROUP BY Employee.ID
+HAVING
+    COUNT(DISTINCT Attendees.meetingId) >= (
+        SELECT COUNT(DISTINCT Attendees.meetingId) * 0.75
+        FROM Attendees 
+        GROUP BY Attendees.employeeId
+        ORDER BY COUNT(DISTINCT Attendees.meetingId) DESC
+        LIMIT 1
+    )
+ORDER BY nummeetings DESC, Employee.name;
+\qecho
+\qecho #5 
+SELECT
+    ROUND(total_meetings / CAST(total_rooms AS DECIMAL) * 100) AS "Util in %"
+FROM (
+    SELECT
+        COUNT(*) AS total_rooms,
+        (SELECT COUNT(*)
+         FROM Meeting AS M
+         WHERE M.starttime <= '2018-03-04 10:00:00 AM' AND
+               M.starttime + M.duration >= '2018-03-04 10:00:00 AM') AS total_meetings
+    FROM Room
+) AS subquery;
+\qecho #6
+SELECT category, num_employees
+FROM (
+    SELECT pt.Name AS category, COUNT(DISTINCT e.ID) AS num_employees
+    FROM PhoneType pt
+    	JOIN Phone p ON pt.ID = p.PhoneTypeID
+    	JOIN Employee e ON p.EmployeeID = e.ID
+    GROUP BY pt.Name
+) AS subquery
+ORDER BY category;
+\qecho
+\qecho #7
+SELECT category, num_listings
+FROM (
+    SELECT pt.Name AS category, COUNT(p.ID) AS num_listings
+    FROM PhoneType pt
+    	JOIN Phone p ON pt.ID = p.PhoneTypeID
+    GROUP BY pt.Name
+) AS subquery
+ORDER BY category;
+\qecho
+\qecho #8
+SELECT m.Id AS meetingid,m.purpose,
+    (
+        SELECT COUNT(p.ID)
+        FROM Phone p
+        	JOIN Employee e ON p.EmployeeID = e.ID
+        	JOIN Attendees a ON e.ID = a.employeeId
+        WHERE a.meetingId = m.Id AND p.PhoneTypeID = 'C'
+    ) AS num_cell_phones
+FROM Meeting m
+	JOIN Room r ON m.roomId = r.ID
+WHERE r.building = 'B'
+ORDER BY meetingid;
+\qecho
+\qecho #9
+SELECT ROUND(AVG(num_cell_phones), 2) AS avg_phones
+FROM (
+    SELECT m.Id AS meetingid, COUNT(DISTINCT p.ID) AS num_cell_phones
+    FROM Meeting m
+    	JOIN Room r ON m.roomId = r.ID
+    	JOIN Attendees a ON m.Id = a.meetingId
+    	JOIN Employee e ON a.employeeId = e.ID
+    	JOIN Phone p ON e.ID = p.EmployeeID AND p.PhoneTypeID = 'C'
+    WHERE r.building = 'B'
+    GROUP BY m.Id
+    ) subquery;
+\qecho
+\qecho #10 
+SELECT Department.name AS department_name, (Sub1.totalduration / Sub2.num_meetings) AS avg_time
+FROM (
+	SELECT departmentid, SUM(duration) totalduration
+	FROM Employee
+		JOIN Attendees ON (Employee.id = Attendees.employeeid)
+		JOIN Meeting ON (Attendees.meetingid = Meeting.id)
+	GROUP BY departmentid
+) AS Sub1
+	JOIN Department ON (Sub1.departmentid = Department.id)
+	JOIN (
+		SELECT departmentid AS dept_id, COUNT(DISTINCT Attendees.meetingid) AS num_meetings
+		FROM Employee
+			JOIN Attendees ON (Employee.id = Attendees.employeeid)
+		GROUP BY departmentid
+		ORDER BY departmentid	
+	    ) AS Sub2 ON (Sub1.departmentid = Sub2.dept_id)
+ORDER BY department.name;

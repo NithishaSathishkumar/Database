@@ -1,0 +1,137 @@
+\qecho 
+\qecho Nithisha Sathishkumar
+
+\qecho 
+\qecho #1
+SELECT Author.FirstName, Author.LastName 
+FROM Author
+	LEFT JOIN BookToAuthor ON Author.ID = BookToAuthor.Authorid
+WHERE BookCatID IS NULL
+ORDER BY Author.ID;
+
+\qecho 
+\qecho #2 
+SELECT BookCat.ID, BookCat.Title 
+FROM BookCat
+	LEFT JOIN BookToAuthor ON BookToAuthor.BookCatID = BookCat.ID
+WHERE BookToAuthor IS NULL
+ORDER BY BookCat.id;
+
+\qecho 
+\qecho #3
+SELECT DISTINCT(Author.ID) AS id
+FROM Author
+	JOIN BookToAuthor ON Author.ID = BookToAuthor.Authorid
+	JOIN BookCat ON BookToAuthor.BookCatID = BookCat.ID
+	JOIN BookCatToGenre ON BookCat.ID = BookCatToGenre.BookCatID
+	JOIN Genre ON BookCatToGenre.genreid = Genre.id 
+WHERE Genre.name LIKE '%Science%'
+ORDER BY Author.ID;
+
+\qecho 
+\qecho #4 
+SELECT COUNT(DISTINCT Author.ID) AS "numNonScienceAuthors"
+FROM Author
+	LEFT JOIN (
+    	SELECT DISTINCT(Author.ID) AS id
+    	FROM Author
+    		JOIN BookToAuthor ON Author.ID = BookToAuthor.Authorid
+    		JOIN BookCat ON BookToAuthor.BookCatID = BookCat.ID
+    		JOIN BookCatToGenre ON BookCat.ID = BookCatToGenre.BookCatID
+    		JOIN Genre ON BookCatToGenre.genreid = Genre.id 
+    	WHERE Genre.name LIKE '%Science%'
+	) AS ScienceAuthors ON Author.ID = ScienceAuthors.ID
+WHERE ScienceAuthors.ID IS NULL;
+
+\qecho 
+\qecho #5
+SELECT Customer.ID, Customer.FirstName, Customer.Lastname 
+FROM Customer
+	LEFT JOIN LibCard ON LibCard.ID = Customer.ID
+WHERE isActive = FALSE
+ORDER BY Customer.ID;
+
+\qecho 
+\qecho #6
+SELECT Genre.name AS name
+FROM Genre
+	LEFT JOIN BookCatToGenre ON Genre.id = BookCatToGenre.genreid
+WHERE BookCatToGenre.genreid IS NULL
+ORDER BY Genre.id;
+
+\qecho 
+\qecho #7
+SELECT Genre.name AS genrename, COUNT(BookCatToGenre.genreid) AS genretotal FROM Genre
+	LEFT JOIN BookCatToGenre ON Genre.id = BookCatToGenre.genreid 
+GROUP BY genreid, genre.name
+ORDER BY genretotal;
+
+\qecho 
+\qecho #8
+SELECT COALESCE(book_genres_count.genre_count, 0) AS genre_count, COUNT(*) AS numbooks
+FROM (
+    SELECT BookCat.ID, COUNT(BookCatToGenre.genreID) AS genre_count
+    FROM BookCat
+    	LEFT JOIN BookCatToGenre ON BookCat.ID = BookCatToGenre.BookCatID
+    GROUP BY BookCat.ID
+) AS book_genres_count 
+GROUP BY COALESCE(book_genres_count.genre_count, 0)
+ORDER BY genre_count;
+
+\qecho 
+\qecho #9
+SELECT Customer.ID AS customerid, Customer.FirstName AS firstname, Customer.Lastname AS lastname, Phone.PhoneTypeID, COALESCE(Phone.number::text, 'None') AS number
+FROM Customer
+	RIGHT JOIN LibCard ON LibCard.ID = Customer.ID
+	RIGHT JOIN Phone ON Customer.ID = Phone.CustomerId
+WHERE isActive = FALSE
+ORDER BY Customer.Id, number;
+
+\qecho 
+\qecho #10 
+SELECT Customer.ID AS id, Customer.FirstName AS firstname, Customer.Lastname AS lastname,
+       COALESCE(Phone.number::text, 'None') AS number
+FROM Customer
+	LEFT JOIN LibCard ON LibCard.ID = Customer.ID
+	LEFT JOIN Phone ON Customer.ID = Phone.CustomerId AND Phone.PhoneTypeID = 'C'
+WHERE LibCard.isActive = FALSE
+ORDER BY Customer.ID;
+
+\qecho
+\qecho #11A
+SELECT COUNT(DISTINCT(Customer.ID)) AS numcustomers 
+FROM Customer;
+
+\qecho
+\qecho #11B
+SELECT DISTINCT(Customer.ID) AS customerid FROM Customer
+	JOIN LibCard ON LibCard.CustomerID = Customer.ID
+	JOIN CORecord ON LibCard.ID = CORecord.LibCardID
+WHERE CODATE >= '2022-02-01'
+ORDER BY Customer.ID;
+
+\qecho
+\qecho #11C
+SELECT DISTINCT(Customer.ID) AS id FROM Customer
+	LEFT JOIN LibCard ON LibCard.CustomerID = Customer.ID
+	LEFT JOIN CORecord ON LibCard.ID = CORecord.LibCardID
+WHERE CORecord.CODATE > '2022-02-01' OR CORecord.CODate IS NULL
+ORDER BY Customer.ID;
+
+\qecho
+\qecho #12
+SELECT DISTINCT(table2.ID), table2.title 
+FROM (
+        SELECT BookCat.ID, BookCat.title, Genre.name 
+        FROM BookCat
+		JOIN BookCatToGenre ON BookCatToGenre.BookCatID = BookCat.ID
+		JOIN Genre ON Genre.ID = BookCatToGenre.genreid
+) AS table2
+LEFT JOIN (
+	SELECT BookCat.ID
+        FROM BookCat
+		JOIN Book ON BookCat.ID = Book.BookCatID
+		JOIN CORecord ON CoRecord.BookID = Book.ID
+) AS table1 ON table2.ID = table1.ID
+WHERE table2.name = 'Computer Science' AND table1.ID IS NULL
+ORDER BY table2.ID;

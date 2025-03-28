@@ -1,0 +1,74 @@
+\qecho Nithisha Sathishkumar
+\qecho
+\qecho #1 Freebie Professor said
+\qecho
+\qecho #2
+SELECT Employee.EmployeeNum, Employee.name, COUNT(Phone.employeeid) AS "Num Phones"
+FROM Employee
+	JOIN Phone ON Employee.id = Phone.employeeid
+GROUP BY EmployeeNum, Employee.name, Phone.employeeid
+HAVING COUNT(Phone.employeeid) >= 2
+ORDER BY Employee.EmployeeNum;
+\qecho
+\qecho #3 
+SELECT Employee.name, PhoneType.name AS "phone type", Phone.number 
+FROM Employee
+	JOIN Phone ON Phone.employeeid = Employee.id
+	JOIN PhoneType ON Phone.phonetypeid = PhoneType.id
+WHERE Employee.email LIKE 'a%'
+GROUP BY Employee.name, PhoneType.name, Phone.number
+ORDER BY Employee.name, Phone.number;
+\qecho
+\qecho #4 ??round to 2 decimal 
+SELECT Department.name AS "DepartmentName", COUNT(Employee.departmentID) AS "numEmployees", 
+	Round(AVG(Employee.Salary), 2) AS "Average Salary", SUM(Employee.Salary) AS "totalSalaryAmount" 
+FROM Employee
+	JOIN Department ON Department.ID = Employee.departmentID
+GROUP BY Department.name, Employee.departmentID
+ORDER BY Department.name; 
+\qecho
+\qecho #5
+
+SELECT employee.name AS name, phone.number AS number
+FROM employee
+JOIN attendees ON employee.id = attendees.employeeid
+JOIN meeting ON attendees.meetingid = meeting.id
+JOIN phone ON employee.id = phone.employeeid
+WHERE meeting.purpose = 'Lunch' AND meeting.starttime = '2018-03-28
+12:00:00' AND phone.phonetypeid = 'C'
+ORDER BY employee.name;
+\qecho
+\qecho #6
+SELECT Meeting.purpose AS "MeetingPurpose", Meeting.startTime::DATE AS "MeetingDate", 
+	Meeting.startTime::TIME AS "MeetingTime", Room.Building AS building, Room.roomNumber AS "roomNumber" 
+FROM Meeting
+	JOIN Room ON Meeting.RoomID = Room.ID
+WHERE capacity IS NULL
+ORDER BY Meeting.startTime, Meeting.purpose;
+\qecho
+\qecho #7
+SELECT Meeting.purpose, Meeting.startTime, (duration + startTime) AS "endtime"
+FROM Meeting
+WHERE Meeting.purpose != 'Lunch' AND Meeting.moderatorID IS NULL
+ORDER BY Meeting.startTime; 
+\qecho
+\qecho #8
+SELECT Meeting.purpose, Meeting.startTime, COUNT(Attendees.MeetingID) AS "numattendees" 
+FROM Meeting
+	JOIN Attendees ON Meeting.ID = Attendees.MeetingID
+GROUP BY Meeting.purpose, Meeting.startTime
+ORDER BY Meeting.startTime DESC, Meeting.purpose;
+\qecho
+\qecho #9
+SELECT room.building AS "Building", COUNT(phone.id) AS "NumCellPhones"
+FROM room
+	JOIN meeting ON room.id = meeting.roomid
+	JOIN attendees ON meeting.id = attendees.meetingid
+	JOIN employee ON attendees.employeeid = employee.id
+	JOIN phone ON employee.id = phone.employeeid
+WHERE phone.phonetypeid = 'C' AND meeting.starttime BETWEEN '2018-03-28 12:15:00' AND '2018-03-28 16:00:00'
+GROUP BY room.building
+ORDER BY room.building;
+
+
+
